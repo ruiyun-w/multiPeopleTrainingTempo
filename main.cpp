@@ -43,7 +43,8 @@ int main(int argc, char** argv) {
     }
     // Open first available port.
     midiout->openPort(0);
-
+    // set tempo with change 500
+    double tickDurationMilseconds = double(500) / double(480);
     for (int track = 0; track < tracks; track++) {
         for (int event = 0; event < midifile[track].size(); event++) {
             if (midifile[track][event].isNoteOn()) {
@@ -52,17 +53,17 @@ int main(int argc, char** argv) {
         }
     }
 
-    for (int event = 0; event < noteOnEvent.size(); event++) {
-        midiout->sendMessage(noteOnEvent[event]);
-        int tickDuration = noteOnEvent[event+1]->tick - noteOnEvent[event]->tick;
+    for (int event = 1; event < noteOnEvent.size(); event++) {
+        midiout->sendMessage(noteOnEvent[event-1]);
+        int tickDuration = noteOnEvent[event]->tick - noteOnEvent[event-1]->tick;
         //int secDuration = int(noteOnEvent[event + 1]->seconds - noteOnEvent[event]->seconds);
         if (tickDuration) {
             //Sleep(secDuration);
-            Sleep(int(tickDuration * (500 / 480)));
+            Sleep(int(tickDuration * tickDurationMilseconds));
         }
     }
+    delete midiout;
     return 0;
-    
 }
 
 
